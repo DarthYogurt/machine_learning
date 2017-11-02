@@ -9,31 +9,30 @@ def compute_cost(theta, X, y):
 
 def linear_regression(theta, X, y, alpha):
 	# reduce theta by alpha, and distance
-	# h = X * theta
+	new_theta = np.matrix(np.zeros(theta.shape))
 	m = X.shape[0]
-	# hyp_update = (h - y).transpose() * X
-	# print "hyp update", hyp_update
-	# delta = (alpha / m) * np.sum(hyp_update)
-	# return theta - delta
-
 	J = (X * theta) - y # not cost function, partial
-	theta[0,0] = theta[0,0] - ((alpha/m) * np.sum(J) )
-	theta[1:,0] = theta[1:,0] - ((alpha/m)  * np.sum( X[:,1:].transpose() * J) )
+	new_theta[0,0] = theta[0,0] - ((alpha/(m)) * np.sum(J) )
+	new_theta[1:,0] = theta[1:,0] - ((alpha/(m))  * np.sum( X[:,1:].transpose() * J) )
+	return new_theta
 
-	return theta
-
-def gradient_decent(theta, X, y, alpha, iter):
+def lr_gradient_decent(theta, X, y, alpha, iter):
+	#linear regression gradient decent
+	lowest_cost = compute_cost(theta, X, y)
 	new_theta = theta
 	for i in range(iter):
 		new_theta = linear_regression(new_theta, X, y, alpha)
-		# print
-		# print "theta", new_theta
-		# print "cost", compute_cost(new_theta, X, y)
+		print
+		print "theta", new_theta
+		new_cost =  compute_cost(new_theta, X, y)
+		print "new cost", new_cost
+		lowest_cost = new_cost if new_cost < lowest_cost else lowest_cost
+
 
 	print
 	print "End", new_theta
 	print "end cost", compute_cost(new_theta, X, y)
-
+	print "lowest cost", lowest_cost
 
 def parse_data(file):
 	# take in csv file then return matrix 
@@ -41,40 +40,31 @@ def parse_data(file):
 	with open(file, 'rb') as csvfile:
 		file = csv.reader(csvfile, delimiter=' ', quotechar='|')
 		for row in file:
+			# print row
 			# print row[0].split(',')
 			arr.append(row[0].split(','))
 
 	return np.matrix(arr, dtype=float)
 
 # def main():
-X = parse_data('x_data.txt')
-y = parse_data('y_data.txt')
-# X = parse_data('test_x.txt')
-# y = parse_data('test_y.txt')
+# X = parse_data('x_data.txt')
+# y = parse_data('y_data.txt')
 
+X = parse_data('x_data_3.txt')
+y = parse_data('y_data_3.txt')
 
-theta = np.matrix([
-	[0],
-	[0]
-	], dtype=float)
+theta = np.matrix(np.zeros((np.size(X,1),1), dtype=float)) #initialize Theta 0
+# theta = np.matrix([
+# 	[0],
+# 	[0],
+# 	[0]
+# 	], dtype=float)
 alpha = .01
-iterations = 50000
-m = X.shape[0]
+iterations = 50
 
-'''
-    J =  (X*theta) - y
-    theta(1) = theta(1) - alpha * sum(J) / m
-    theta(2:end,:) = theta(2:end,:) - (alpha/m) * (sum(X(:,2:end)' * J)) '''
+lr_gradient_decent(theta, X, y, alpha, iterations)
 
-
-
-
-# print theta 
-# X = np.matrix(X, dtype=float)
-# y = np.matrix(y, dtype=float)
-	
-gradient_decent(theta, X, y, alpha, iterations)
-
+# print compute_cost(theta, X, y)
 # print linear_regression(theta, X, y, alpha)
 
 
